@@ -4,6 +4,8 @@ import { AuthService } from '../../api-rest/services/auth.service';
 import { TokenStorageService } from '../token-storage.service';
 import { Router } from '@angular/router';
 import { catchError } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { LoadingDialogComponent } from '../../shared/loading-dialog/loading-dialog.component';
 
 @Component({
   selector: 'app-login',
@@ -19,6 +21,7 @@ export class LoginComponent {
 
   constructor(  private formBuilder : FormBuilder, 
                 private authService: AuthService, 
+                public dialog : MatDialog,
                 private tokenService : TokenStorageService,
                 private router : Router,
                 ) {}
@@ -32,9 +35,10 @@ export class LoginComponent {
 
   onSubmit(){
     if(this.loginForm.valid){
+      const loadingDialog = this.dialog.open(LoadingDialogComponent)
       this.authService.postLogin(this.loginForm.value).pipe(
         catchError((error) => {
-          
+
           this.handleError(error.error.message)
 
           return [];
@@ -42,7 +46,8 @@ export class LoginComponent {
       ).subscribe(
         (response)=>{
           this.respuesta = response; 
-          
+          loadingDialog.close();
+
           if(this.respuesta.success){
             this.tokenService.saveToken(this.respuesta.token);//guarda el token
             this.tokenService.saveUser(this.respuesta.user._id);//guarda id del user
