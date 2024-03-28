@@ -1,0 +1,11 @@
+div{
+    display: flex;
+
+    mat-card{
+        background-color: var(--elementBackgroundColor);
+        p{
+            margin: 0;
+            color: var(--darkColor);
+        }
+    }
+}
